@@ -12,7 +12,7 @@ class GameScene extends Phaser.Scene {
 
     create() {
         // field
-        field = this.add.image(400, 300, 'field');
+        field = this.add.image(config.width / 2, config.height / 2, 'field');
         field.height = config.height;
         field.width = config.width;
         
@@ -24,16 +24,16 @@ class GameScene extends Phaser.Scene {
         bolls.children.iterate((child) => {
             child.setBounce(1);
             child.setCollideWorldBounds(true);
-            child.x = Phaser.Math.Between(0, 800);
-            child.y = Phaser.Math.Between(0, 600);
+            child.x = Phaser.Math.Between(0, config.width);
+            child.y = Phaser.Math.Between(0, config.height);
             child.setVelocity(Phaser.Math.Between(-300, 300), Phaser.Math.Between(-300, 300));
-            child.setScale(Phaser.Math.Between(1, 3) / 10);
+            child.setScale(Phaser.Math.Between(1, 4) / 10);
         });
         this.physics.add.collider(bolls, bolls);
 
         // footboller
         footboller = this.physics.add.staticGroup();
-        footboller.create(400, 300, 'footboller').setScale(2);
+        footboller.create(config.width / 2, config.height / 2, 'footboller').setScale(2);
         this.physics.add.collider(bolls, footboller);
     }
 
