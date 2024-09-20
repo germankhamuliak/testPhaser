@@ -36,9 +36,6 @@ class GameScene extends Phaser.Scene {
         footboller.create(config.width / 2, config.height / 2, 'footboller').setScale(2);
         this.physics.add.collider(bolls, footboller);
     }
-
-    update() {
-    }
 }
 
 
