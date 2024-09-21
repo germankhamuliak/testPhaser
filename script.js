@@ -7,9 +7,7 @@ class GameScene extends Phaser.Scene {
     preload() {
         this.load.image('field', 'assets/field.png');
         this.load.image('boll', 'assets/boll.png');
-        this.load.image('footboller', 'assets/footboller.png');
-        console.log(this);
-        
+        this.load.image('footboller', 'assets/footboller.png');      
     }
 
     create() {
