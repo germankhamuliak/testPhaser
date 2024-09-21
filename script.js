@@ -68,23 +68,17 @@ class GameScene extends Phaser.Scene {
     ballCollision(ball1, ball2) {
         const dx = ball1.x - ball2.x;
         const dy = ball1.y - ball2.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < (ball1.displayWidth / 2 + ball2.displayWidth / 2)) {
-            const angle = Math.atan2(dy, dx);
-            ball1.setVelocity(300 * Math.cos(angle), 300 * Math.sin(angle));
-            ball2.setVelocity(-300 * Math.cos(angle), -300 * Math.sin(angle));
-        }
+        const angle = Math.atan2(dy, dx);
+        ball1.setVelocity(500 * Math.cos(angle), 500 * Math.sin(angle));
+        ball2.setVelocity(-500 * Math.cos(angle), -500 * Math.sin(angle));
     }
     
     // Проверка столкновений с футболитом
     ballFootballerCollision(ball, player) {
         const dx = ball.x - player.x;
         const dy = ball.y - player.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < (ball.displayWidth / 2 + player.displayWidth / 2)) {
-            const angle = Math.atan2(dy, dx);
-            ball.setVelocity(300 * Math.cos(angle), 300 * Math.sin(angle));
-        }
+        const angle = Math.atan2(dy, dx);
+        ball.setVelocity(500 * Math.cos(angle), 500 * Math.sin(angle));
     }
 }
 
