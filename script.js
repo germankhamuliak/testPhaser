@@ -8,6 +8,8 @@ class GameScene extends Phaser.Scene {
         this.load.image('field', 'assets/field.png');
         this.load.image('boll', 'assets/boll.png');
         this.load.image('footboller', 'assets/footboller.png');
+        console.log(this);
+        
     }
 
     create() {
@@ -40,12 +42,12 @@ class GameScene extends Phaser.Scene {
 
 
 let config = {
-type: Phaser.AUTO,
-width: 800,
-height: 600,
-scene: new GameScene(),
-physics: {
-    default: 'arcade',
-}
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    scene: new GameScene(),
+    physics: {
+        default: 'arcade',
+    }
 }
 let game = new Phaser.Game(config);
