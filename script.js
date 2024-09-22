@@ -1,84 +1,71 @@
 let field;
-let balls;
-let ballCount = 4;
-let footballer;
+let lightBalls;
+let heavyBall;
+//колличество допустимых столкновений со стенами
+let score = 7;
 
 class GameScene extends Phaser.Scene {
     preload() {
         this.load.image('field', 'assets/field.png');
         this.load.image('ball', 'assets/ball.png');
-        this.load.image('footballer', 'assets/footballer.png');      
     }
 
     create() {
-        // field
-        field = this.add.image(config.width / 2, config.height / 2, 'field');
+        // Поле
+        field = this.add.image(config.width / 2, config.height / 2, 'field')
         field.setDisplaySize(config.width, config.height);
-        
-        // balls
-        balls = this.physics.add.group({
-            key: 'ball',
-            repeat: ballCount - 1,
-        });
-        balls.children.iterate((child) => {
-            child.x = Phaser.Math.Between(0, config.width);
-            child.y = Phaser.Math.Between(0, config.height);
-            child.setVelocity(Phaser.Math.Between(-300, 300), Phaser.Math.Between(-300, 300));
-            child.setScale(Phaser.Math.Between(1, 4) / 10);
-        });
-        this.physics.add.collider(balls, balls, this.ballCollision, null, this);
 
-        // footballer
-        footballer = this.physics.add.staticGroup(); 
-        footballer.create(config.width / 2, config.height / 2, 'footballer').setScale(2);
-        this.physics.add.collider(balls, footballer, this.ballFootballerCollision, null, this);
+        //Легкие мячи
+        lightBalls = this.physics.add.group();
+        this.createBall(Phaser.Math.Between(0, config.width), Phaser.Math.Between(0, config.height), score);
+        this.physics.add.collider(lightBalls, lightBalls);
+
+        // Создание тяжелого мяча
+        heavyBall = this.physics.add.sprite(Phaser.Math.Between(0, config.width), Phaser.Math.Between(0, config.height), 'ball')
+        heavyBall.setBounce(1)
+        heavyBall.setCollideWorldBounds(true)
+        heavyBall.setVelocity(Phaser.Math.Between(-300, 300), Phaser.Math.Between(-300, 300))
+        heavyBall.setScale(0.3);
+        heavyBall.body.mass = 5;
+        this.physics.add.collider(lightBalls, heavyBall, this.addBall, null, this);
     }
-
-
-    update() {
-        balls.children.iterate((ball) => {
-            this.checkWallCollisions(ball);
-        });
+    // Создание легкого мяча
+    createBall(x, y, score) {
+        const ball = lightBalls.create(x, y, 'ball');
+        ball.setBounce(1)
+        ball.setCollideWorldBounds(true)
+        ball.setVelocity(Phaser.Math.Between(-300, 300), Phaser.Math.Between(-300, 300))
+        ball.setScale(0.2);
+        ball.score = score;
+        ball.scoreText = this.add.text(x, y, score, { fontSize: '32px', fill: '#fff' }).setOrigin(0.5);
+        ball.iswallCollision = false;
     }
-
-    // Проверка столкновений со стенами
-    checkWallCollisions(ball) {
-        balls.children.iterate((child) => {
-            const size = child.displayWidth * 0.5;
-            const ballLeft = child.x - size;
-            const ballRight = child.x + size;
-            const ballTop = child.y - size;
-            const ballBot = child.y + size;
-            if (ballLeft <= 0) {
-                child.setVelocityX(Phaser.Math.Between(200, 300));
-            } 
-            if (ballRight >= config.width) {
-                child.setVelocityX(Phaser.Math.Between(-300, -200));
-            }
-            if (ballBot >= config.height) {
-                child.setVelocityY(Phaser.Math.Between(-300, -200));
-            } 
-            if (ballTop <= 0) {
-                child.setVelocityY(Phaser.Math.Between(200, 300));
-            }
-        });
-    }
-
-    // Проверка столкновений шариков
-    ballCollision(ball1, ball2) {
-        const dx = ball1.x - ball2.x;
-        const dy = ball1.y - ball2.y;
-        const angle = Math.atan2(dy, dx);
-        ball1.setVelocity(500 * Math.cos(angle), 500 * Math.sin(angle));
-        ball2.setVelocity(-500 * Math.cos(angle), -500 * Math.sin(angle));
+    // добавление легкого мяча при столкновении с тяжелым
+    addBall(Ball1,Ball2) {
+        this.createBall(Ball1.x, Ball1.y, score);
     }
     
-    // Проверка столкновений с футболитом
-    ballFootballerCollision(ball, player) {
-        const dx = ball.x - player.x;
-        const dy = ball.y - player.y;
-        const angle = Math.atan2(dy, dx);
-        ball.setVelocity(500 * Math.cos(angle), 500 * Math.sin(angle));
+
+    update() {
+        lightBalls.children.iterate((ball) => {
+            //проерка на наличие мяча, так как если ее нету то scoreText.setPosition(); пытается обновиться у мяча которого нету и ловится ошибка
+            if(ball) {
+                ball.scoreText.setPosition(ball.x, ball.y);
+                //пришлось проверять находится мячик в столкновении с границами или нет, а то отнималось большечем 1
+                let wallCollision = ball.body.blocked.left || ball.body.blocked.right || ball.body.blocked.up || ball.body.blocked.down;
+                if (wallCollision && !ball.isWallCollision) {
+                    ball.score--;
+                    ball.scoreText.setText(ball.score);
+                    ball.isWallCollision = true;
+                    if (ball.score <= 0) {
+                        ball.scoreText.destroy();
+                        ball.destroy();
+                    }
+                } else if (!wallCollision) {
+                    ball.isWallCollision = false;
+                }
+            }
+        });
     }
 }
 
@@ -88,8 +75,8 @@ let config = {
     height: 600,
     scene: new GameScene(),
     physics: {
-        default: 'arcade',
+        default: 'arcade'
     }
-}
+};
 
 let game = new Phaser.Game(config);
