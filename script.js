@@ -38,11 +38,18 @@ class GameScene extends Phaser.Scene {
         ball.setScale(0.2);
         ball.score = score;
         ball.scoreText = this.add.text(x, y, score, { fontSize: '32px', fill: '#fff' }).setOrigin(0.5);
-        ball.iswallCollision = false;
+        ball.isWallCollision = false;
+        ball.isBallCollision = false;
     }
     // добавление легкого мяча при столкновении с тяжелым
-    addBall(Ball1,Ball2) {
-        this.createBall(Ball1.x, Ball1.y, score);
+    addBall(lightBall, heavyBall) {
+        if (!lightBall.isBallCollision) {
+            lightBall.isBallCollision = true;
+            this.createBall(lightBall.x, lightBall.y, score);
+            this.time.delayedCall(1000, () => {
+                lightBall.isBallCollision = false;
+            });
+        }
     }
     
 
