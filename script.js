@@ -46,7 +46,7 @@ class GameScene extends Phaser.Scene {
         if (!lightBall.isBallCollision) {
             lightBall.isBallCollision = true;
             this.createBall(lightBall.x, lightBall.y, score);
-            this.time.delayedCall(100, () => {
+            this.time.delayedCall(300, () => {
                 lightBall.isBallCollision = false;
             });
         }
